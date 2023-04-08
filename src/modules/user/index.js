@@ -10,6 +10,7 @@ const UserLayout = React.lazy(() => import("./components/layout"))
 const LandingPage = React.lazy(() => import("./components/landingpage"))
 const MYQuestion = React.lazy(() => import("./components/MYQuestion"))
 const PinnedQuesinos = React.lazy(() => import("./components/MYQuestion"))
+const QuestionDetails = React.lazy(() => import("./components/QuestionDetails"))
 const MYAnswers = React.lazy(() => import("./components/MYAnswers"))
 const AboutPage = React.lazy(() => import("./components/AboutUs"))
 const LoginPage = React.lazy(() => import("./components/login"))
@@ -25,6 +26,7 @@ function UserRoutes() {
                     <Route path='mytopics' element={<MYQuestion />} />
                     <Route path='myanswers' element={<MYAnswers />} />
                     <Route path='pinned' element={<PinnedQuesinos />} />
+                    <Route path='question/:id' element={<QuestionDetails />} />
                     <Route path='about' element={<AboutPage />} />
                     <Route path="*" element={<Error />} />
                 </Route>

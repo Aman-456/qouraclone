@@ -125,11 +125,8 @@ export default function NavBar() {
                     spacing="1px"
                     ml="2">
                     <Text fontSize="sm">{profile?.name}</Text>
-
                   </VStack>
-                  <Box display={{ base: 'none', md: 'flex' }}>
-                    <FiChevronDown />
-                  </Box>
+
                 </HStack>
               </MenuButton>
               {

@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    posts: []
+    posts: [],
+    postdata: {},
 }
 
 export const Postlice = createSlice({
@@ -11,10 +12,13 @@ export const Postlice = createSlice({
         setPosts: (state, action) => {
             state.posts = action.payload;
         },
+        setPostdata: (state, action) => {
+            state.postdata = action.payload;
+        },
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { setPosts } = Postlice.actions
+export const { setPosts, setPostdata } = Postlice.actions
 
 export default Postlice.reducer

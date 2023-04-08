@@ -92,7 +92,7 @@ export default function LargeWithNewsletter() {
                         <Link to={"/home"}>Home</Link>
                         <Link to={"/about"}>About us</Link>
                         <Link to={"/addquestion"}>Add Question</Link>
-                        <Link to={"/collabroom"}>Collab Room</Link>
+                        <Link to={"/chatroom"}>Chat Room</Link>
                         <Link to={"/contact"}>Contact us</Link>
                     </Stack>
 
