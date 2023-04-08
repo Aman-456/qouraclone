@@ -4,7 +4,7 @@ import { posts } from "../../../../common/data"
 import { useDispatch } from 'react-redux'
 import { setPosts } from '../../../../Store/Features/posts'
 import { hideLoader, showLoader } from '../../../../Store/Features/LoaderSlice'
-function LandingPage() {
+function MYQuestion() {
     const dispatch = useDispatch()
 
     useLayoutEffect(() => {
@@ -22,4 +22,4 @@ function LandingPage() {
 
 }
 
-export default LandingPage
+export default MYQuestion

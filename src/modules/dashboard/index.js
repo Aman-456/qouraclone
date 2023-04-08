@@ -20,8 +20,8 @@ function UserRoutes() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
-    if (pathname === "/" || pathname === "") {
-      navigate("/usermanagment");
+    if (pathname === "/dashboard") {
+      navigate("/dashboard/usermanagment");
     }
   }, [navigate, pathname]);
   return (

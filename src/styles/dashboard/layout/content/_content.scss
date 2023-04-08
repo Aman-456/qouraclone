@@ -1,31 +1,32 @@
-.ant-layout-content {
-  &.hide.contentOutlet {
-    .contentOutletchildWrapper {
-    }
-  }
-  .contentOutletchildWrapper {
-    &.section {
-      padding: 1% 3%;
-      color: var(--txt-clr-lighter);
-      min-height: calc(100vh - 70px);
-      > * {
-        animation: animate 0.5s linear forwards;
+.adminlayout {
+  .ant-layout-content {
+    &.hide.contentOutlet {
+      .contentOutletchildWrapper {
       }
     }
-    @include scrollbar();
-  }
+    .contentOutletchildWrapper {
+      &.section {
+        padding: 1% 3%;
+        color: var(--txt-clr-lighter);
+        min-height: calc(100vh - 70px);
+        > * {
+          animation: animate 0.5s linear forwards;
+        }
+      }
+      @include scrollbar();
+    }
 
-  margin-block: 0%;
+    margin-block: 0%;
 
-  position: relative;
+    position: relative;
 
-  overflow-y: auto;
-  @include mobile-large() {
-    margin: 15% 1%;
-    @include no-scrollbar();
+    overflow-y: auto;
+    @include mobile-large() {
+      margin: 15% 1%;
+      @include no-scrollbar();
+    }
   }
 }
-
 @keyframes animate {
   0% {
     opacity: 0;

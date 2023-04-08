@@ -9,19 +9,12 @@
 @import "./TableWrapper/TableWrapper.scss";
 @import "./Errors/errors.scss";
 @import "./Buttons/buttons.scss";
-
-.adminlayout {
-  max-height: 100vh;
-}
+@import "./Forum/index.scss";
 
 body {
-  height: 100vh;
+  min-height: 100vh;
   max-width: 2000px;
   margin: auto;
-  overflow-y: hidden;
-  @include mobile-large() {
-    // overflow: unset;
-  }
 }
 
 .m0,
