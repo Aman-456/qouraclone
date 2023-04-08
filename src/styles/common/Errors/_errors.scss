@@ -1,0 +1,22 @@
+.ErrorPage {
+  @include flexcenter();
+  flex-direction: column;
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  width: MIN(90%, 600px);
+  box-shadow: var(--shadow);
+  background: var(--bg-side);
+  border-radius: 12px;
+  padding: 20px;
+  h1 {
+    font-size: 1.5rem;
+    color: white;
+  }
+  .btn {
+    background: var(--bg-app);
+    color: rgb(34, 34, 34);
+    font-weight: 600;
+  }
+}
