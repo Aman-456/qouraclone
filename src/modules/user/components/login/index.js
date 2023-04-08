@@ -18,7 +18,7 @@ function SinginPage() {
             <div className={'infoDiv'}>
                 <motion.form
                     initial={{ x: -1000 }}
-                    transition={{ duration: 1 }}
+                    transition={{ duration: .5 }}
                     animate={{ x: 0 }}
                     onSubmit={e => { e.preventDefault(); handlesubmit() }}
                 >

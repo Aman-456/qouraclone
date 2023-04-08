@@ -55,8 +55,8 @@ function SingupPage() {
             <div className={` infoDiv signup `}>
                 <motion.form
                     initial={{ x: -1000 }}
-                    animate={{ x: 0, }}
-                    transition={{ duration: 1 }}
+                    transition={{ duration: .5 }}
+                    animate={{ x: 0 }}
                     onSubmit={e => { e.preventDefault(); handlesubmit() }}
                 >
                     <div className={'tagDiv'}>
