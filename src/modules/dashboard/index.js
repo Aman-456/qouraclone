@@ -9,8 +9,8 @@ const Analaytics = React.lazy(() =>
 const UserManagment = React.lazy(() =>
   import("./components/usermanagment")
 );
-const DistributersList = React.lazy(() =>
-  import("./components/DistributersList")
+const NoticeManagment = React.lazy(() =>
+  import("./components/NoticeManagment")
 );
 const Settings = React.lazy(() =>
   import("./components/settings")
@@ -29,7 +29,7 @@ function UserRoutes() {
       <Route path="/" element={<AdminLayout />}>
         <Route path="/usermanagment" element={<UserManagment />} />
         <Route path="/postmanagment" element={<PostMangment />} />
-        <Route path="/notice" element={<DistributersList />} />
+        <Route path="/notice" element={<NoticeManagment />} />
         <Route path="/analytics" element={<Analaytics />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<ErrorPage />} />

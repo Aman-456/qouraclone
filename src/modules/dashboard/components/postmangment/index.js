@@ -1,9 +1,10 @@
 import React from "react";
-import ManagementTable from "./Table";
+import UserTableWrapper from "../../../../common/Tables";
+
 
 function PostMangment() {
   return (
-    <ManagementTable />
+    <UserTableWrapper text={"POSTS"} status="post" />
   );
 }
 

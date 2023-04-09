@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import ManagementTable from "./Table";
+
 import { useDispatch } from "react-redux";
+import UserTableWrapper from "../../../../common/Tables";
 import { hideLoader, showLoader } from "../../../../Store/Features/LoaderSlice";
 
 function UserManagement() {
@@ -18,8 +19,8 @@ function UserManagement() {
     };
   }, [dispatch]);
   return (
-    <ManagementTable />
-  );
+    <UserTableWrapper status="user" text={"USERS"} />
+  )
 }
 
 export default UserManagement;
