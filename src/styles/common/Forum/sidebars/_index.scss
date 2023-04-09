@@ -16,14 +16,22 @@
     z-index: 2;
     color: var(--red);
   }
+  &.active {
+    color: var(--red);
+  }
 }
 
+@media screen and (max-width: 995px) {
+  .spa {
+    display: none;
+  }
+}
 @media only screen and (max-width: 750px) {
   .sideitems {
     gap: 0.8rem;
     svg {
-      font-size: larger;
-    }
+        font-size: larger;
+      }
     p {
       display: none;
     }

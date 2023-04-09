@@ -41,8 +41,7 @@ const RecentQuestions = () => {
         <VStack
             divider={<StackDivider borderColor='gray.200' />}
             w={"100%"}
-            py={"6"}
-            px="2"
+            p="1.5rem 1.2rem"
             borderRadius="lg"
             shadow={"md"}
             background={"white"}

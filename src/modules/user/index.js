@@ -15,9 +15,10 @@ const MYQuestion = React.lazy(() => import("./components/MYQuestion"))
 const SearchPage = React.lazy(() => import("./components/SearchPage"))
 const MYAnswers = React.lazy(() => import("./components/MYAnswers"))
 const AboutPage = React.lazy(() => import("./components/AboutUs"))
-const LoginPage = React.lazy(() => import("./components/login"))
 const UserLayout = React.lazy(() => import("./components/layout"))
 const SignupPage = React.lazy(() => import("./components/signup"))
+const ChatRoom = React.lazy(() => import("./components/chatroom"))
+const LoginPage = React.lazy(() => import("./components/login"))
 const Profile = React.lazy(() => import("./components/Profile"))
 const Error = React.lazy(() => import("../../common/Errors"))
 
@@ -26,22 +27,23 @@ function UserRoutes() {
         <React.Suspense fallback={<GetLoader />}>
             <Routes>
                 <Route path="/*" element={<UserLayout />}>
+                    <Route path="*" element={<Error />} />
                     <Route index element={<LandingPage />} />
+                    <Route path='about' element={<AboutPage />} />
+                    <Route path='profile' element={<Profile />} />
+                    <Route path='chatroom' element={<ChatRoom />} />
                     <Route path='mytopics' element={<MYQuestion />} />
                     <Route path='myanswers' element={<MYAnswers />} />
-                    <Route path='pinned' element={<PinnedQuesinos />} />
-                    <Route path='question/:id' element={<QuestionDetails />} />
-                    <Route path='addquestion' element={<PostQuestion />} />
-                    <Route path='profile' element={<Profile />} />
                     <Route path='user/:id' element={<ViewProfile />} />
-                    <Route path='about' element={<AboutPage />} />
+                    <Route path='pinned' element={<PinnedQuesinos />} />
+                    <Route path='addquestion' element={<PostQuestion />} />
                     <Route path='search/:query' element={<SearchPage />} />
-                    <Route path="*" element={<Error />} />
+                    <Route path='question/:id' element={<QuestionDetails />} />
                 </Route>
                 <Route path='/*' element={<Authenticator role={"customer"} Auth />}>
-                    <Route path='forgotpassword' element={<ForgotPassword />} />
                     <Route path="login" element={<LoginPage />} />
                     <Route path="signup" element={<SignupPage />} />
+                    <Route path='forgotpassword' element={<ForgotPassword />} />
                 </Route>
             </Routes>
         </React.Suspense>

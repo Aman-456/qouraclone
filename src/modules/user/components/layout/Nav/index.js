@@ -24,7 +24,6 @@ import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5"
-import { FiChevronDown } from "react-icons/fi"
 
 
 export default function NavBar() {
@@ -129,27 +128,17 @@ export default function NavBar() {
 
                 </HStack>
               </MenuButton>
-              {
-                profile ?
-                  <MenuList
-                    shadow={"md"}
-                    bg={'white'}>
-                    <MenuItem>
-                      <Link to={"/profile"}>Profile</Link>
-                    </MenuItem>
-                    <MenuDivider />
-                    <MenuItem onClick={handleLogout}>Sign out</MenuItem>
-                  </MenuList>
-                  :
 
-                  <MenuList
-                    shadow={"md"}
-                    bg={'white'}>
-                    <MenuItem>
-                      <Link to={"/login"}>login</Link>
-                    </MenuItem>
-                  </MenuList>
-              }
+              <MenuList
+                shadow={"md"}
+                bg={'white'}>
+                <MenuItem>
+                  <Link to={"/profile"}>Profile</Link>
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+              </MenuList>
+
             </Menu>
           </Flex>
         </Flex>

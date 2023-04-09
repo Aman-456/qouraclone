@@ -28,21 +28,25 @@ function ForunLeft() {
       <SideItem
         name={"Home"}
         url={"/"}
+        active={"/"}
         icon={<AiOutlineHome />}
       />
       <SideItem
         name={"My Topics"}
         url={"/mytopics"}
+        active={"/mytopics"}
         icon={<AiOutlineFileSearch />}
       />
       <SideItem
         name={"My Answers"}
         url={"/myanswers"}
+        active={"/myanswers"}
         icon={<AiOutlineCarryOut />}
       />
       <SideItem
         name={"Pinned Questions"}
         url={"/pinned"}
+        active={"/pinned"}
         icon={<VscPinnedDirty />}
       />
       <SideItem
@@ -60,13 +64,14 @@ function ForunLeft() {
 }
 
 
-const SideItem = ({ name, url, icon }) => {
-  const { pathname } = useLocation();
-  const active = pathname.includes(url)
+const SideItem = ({ name, url, icon, active }) => {
+  const { pathname } = useLocation()
+  let act = pathname === active;
+
   return (
     <Link
       to={url}
-      className={`${active ? "active" : ""} sideitems`}>
+      className={`${act ? "active" : ""} sideitems`}>
       {icon}
       <p className="spa">{name}</p>
     </Link>

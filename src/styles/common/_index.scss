@@ -17,6 +17,9 @@ body {
   max-width: 2000px;
   margin: auto;
 }
+* {
+  scroll-behavior: smooth;
+}
 
 .m0,
 h5.ant-typography.m0,

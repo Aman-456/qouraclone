@@ -7,14 +7,14 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start !important;
-  gap: 3rem;
+  gap: 2rem;
   position: relative;
 }
 .innerFeed > div:first-of-type,
 .innerFeed > div:nth-of-type(3) {
   position: sticky;
   top: 80px !important;
-  width: 23%;
+  width: 24%;
   top: 0;
 }
 
