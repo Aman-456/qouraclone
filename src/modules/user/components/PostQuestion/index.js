@@ -3,6 +3,10 @@ import { Box, Flex, Heading, Text } from '@chakra-ui/react'
 import Editor from '../../../../common/Editor'
 import { TagsInput } from "react-tag-input-component"
 import { Button } from '@chakra-ui/react'
+import Swal from "sweetalert2"
+import { useNavigate } from "react-router-dom"
+import { POSTREQUEST } from '../../../../config/requests'
+import { endpoints } from '../../../../config/endpoints'
 
 function PostQuestion() {
 
@@ -10,10 +14,55 @@ function PostQuestion() {
     const [Title, setTitle] = useState("")
     const [Tags, setTags] = useState([])
     const [loading, setloading] = useState(false)
+    const navigate = useNavigate()
 
     const createpost = async () => {
-        // create post logic
+        try {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"))?._id
 
+            if (String(Title)?.trim().length < 10)
+                return Swal.fire({
+                    icon: "info",
+                    title: "Add Title properly"
+                })
+
+            if (String(Body)?.trim().length < 10)
+                return Swal.fire({
+                    icon: "info",
+                    title: "Add question description properly"
+                })
+            if (Tags?.length < 1)
+                return Swal.fire({
+                    icon: "info",
+                    title: "At Least 1 Tag should be added before saving question"
+                })
+
+            setloading(true)
+            const data = await POSTREQUEST(endpoints.createpost, {
+                Author: currentUser,
+                Title: Title,
+                Body: Body,
+                Tags: Tags
+            });
+            if (data.type === 'success') {
+                navigate("/question/" + data?.result?._id)
+            }
+            else {
+                Swal.fire({
+                    icon: "error",
+                    title: data?.result
+                })
+            }
+            console.log(data);
+            setloading(false)
+        }
+        catch (e) {
+            setloading(false)
+            Swal.fire({
+                icon: "error",
+                title: e?.message || "something went wrong try again later!"
+            })
+        }
     }
 
     useEffect(() => {
@@ -71,6 +120,7 @@ function PostQuestion() {
             <Button
                 style={{ display: "flex", alignItems: "center" }}
                 disabled={loading}
+                _loading={loading}
                 className="btn" onClick={createpost} loading={loading} >Submit</Button>
         </Box>
     )

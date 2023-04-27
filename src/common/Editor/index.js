@@ -42,7 +42,6 @@ function Editor({ setvalues, values, defaultvalue }) {
                 style={{ marginTop: "1rem", }}
                 theme="snow"
                 className="ReactQuill"
-                value={values}
                 onChange={(e) => {
                     setvalues(e)
                 }}

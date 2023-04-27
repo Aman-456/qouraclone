@@ -1,8 +1,12 @@
 /* eslint-disable no-useless-escape */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Swal from 'sweetalert2'
+import { endpoints } from '../../../../config/endpoints'
+import { POSTFORMDATA, POSTREQUEST } from '../../../../config/requests'
+import { hideLoader, showLoader } from '../../../../Store/Features/LoaderSlice'
+import { useDispatch } from 'react-redux'
 
 function SingupPage() {
     const [email, setEmail] = useState("")
@@ -10,6 +14,7 @@ function SingupPage() {
     const [password, setPassword] = useState("")
     const [img, setimg] = useState(null)
     const [imgShow, setImgShow] = useState(null)
+    const dispatch = useDispatch()
 
     const file = (e) => {
         const file = e.target.files[0]
@@ -31,7 +36,6 @@ function SingupPage() {
     function handlesubmit(e) {
         e.preventDefault()
         if (
-            img === null &&
             (email === "" || email === null) &&
             (password === "" || password === null)
             && name === ""
@@ -42,13 +46,81 @@ function SingupPage() {
             if (password.length >= 8 && /[0-9]/.test(password) && /[&._-]/.test(password)) {
                 request();
             }
-            else { }
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Weak password!',
+                    text: "Please use a strong password!!!",
+                    showConfirmButton: true
+                })
+            }
         }
-        else { }
+        else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid email!',
+                text: "Please user a valid email!!!",
+                showConfirmButton: true
+            })
+        }
 
     }
     const request = async () => {
         // signup request
+        try {
+            const values = {
+                name,
+                email,
+                password,
+            }
+            var data;
+            const func = () => dispatch(hideLoader())
+            dispatch(showLoader())
+            if (img || imgShow) {
+                const formdata = new FormData();
+                for (const key in values)
+                    formdata.append(key, values[key]);
+                formdata.append("image", img)
+                data = await POSTFORMDATA(endpoints.signupWithImage, formdata)
+            }
+            else {
+                data = await POSTREQUEST(endpoints.signup, values)
+            }
+            func()
+            if (data?.type === "success") {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Signup Success!',
+                    showConfirmButton: true
+                })
+            }
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: data?.result || 'Signup Error!',
+                    showConfirmButton: true
+                })
+
+            }
+        }
+        catch (e) {
+            console.log(e);
+            Swal.fire({
+                icon: 'error',
+                title: data?.result || 'Signup Error!',
+                showConfirmButton: true
+            })
+        }
+    }
+    useEffect(() => {
+        return () => reset()
+    }, [])
+    const reset = () => {
+        setName(null)
+        setEmail(null)
+        setPassword(null)
+        setimg(null)
+        setImgShow(null)
     }
     return (
         <div className={`LoginSignUpPage`}>

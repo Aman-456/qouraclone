@@ -1,14 +1,53 @@
 
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { hideLoader, showLoader } from '../../../../Store/Features/LoaderSlice'
+import { useDispatch } from 'react-redux'
+import { POSTREQUEST } from '../../../../config/requests'
+import { endpoints } from '../../../../config/endpoints'
+import Swal from 'sweetalert2'
 
 function SinginPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     async function handlesubmit() {
-        //    signin logic
+        try {
+            const values = {
+                email,
+                password,
+            }
+            var data;
+            const func = () => dispatch(hideLoader())
+            dispatch(showLoader())
+            data = await POSTREQUEST(endpoints.signin, values)
+
+            func()
+            if (data?.type === "success") {
+
+                localStorage.setItem("currentUser", JSON.stringify(data.result))
+                localStorage.setItem("userToken", data.result?.token)
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Signin Success!',
+                    showConfirmButton: true
+                })
+                navigate("/")
+            }
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: data?.result || 'Signin Error!',
+                    showConfirmButton: true
+                })
+
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
 
 
