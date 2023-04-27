@@ -3,10 +3,10 @@ import { Box, Flex, Heading, Text } from '@chakra-ui/react'
 import Editor from '../../../../common/Editor'
 import { TagsInput } from "react-tag-input-component"
 import { Button } from '@chakra-ui/react'
-import Swal from "sweetalert2"
 import { useNavigate } from "react-router-dom"
 import { POSTREQUEST } from '../../../../config/requests'
 import { endpoints } from '../../../../config/endpoints'
+import useSwal from '../../../../common/Errors/SwalCall'
 
 function PostQuestion() {
 
@@ -15,28 +15,20 @@ function PostQuestion() {
     const [Tags, setTags] = useState([])
     const [loading, setloading] = useState(false)
     const navigate = useNavigate()
-
+    const fire = useSwal()
     const createpost = async () => {
         try {
             const currentUser = JSON.parse(localStorage.getItem("currentUser"))?._id
 
-            if (String(Title)?.trim().length < 10)
-                return Swal.fire({
-                    icon: "info",
-                    title: "Add Title properly"
-                })
+            if (String(Title)?.trim().length < 30)
+                return fire("info", "Add a valid title! minimum 30 characters long!");
 
-            if (String(Body)?.trim().length < 10)
-                return Swal.fire({
-                    icon: "info",
-                    title: "Add question description properly"
-                })
-            if (Tags?.length < 1)
-                return Swal.fire({
-                    icon: "info",
-                    title: "At Least 1 Tag should be added before saving question"
-                })
 
+            if (String(Body)?.trim().length < 100)
+                return fire("info", "Add a valid description! minimum 100 characters long!");
+            console.log("tags", Tags);
+            if (Tags?.length < 1 || !Tags)
+                return fire("info", "Add a minimum of 1 tag");
             setloading(true)
             const data = await POSTREQUEST(endpoints.createpost, {
                 Author: currentUser,
@@ -45,23 +37,17 @@ function PostQuestion() {
                 Tags: Tags
             });
             if (data.type === 'success') {
+                setloading(false)
                 navigate("/question/" + data?.result?._id)
             }
             else {
-                Swal.fire({
-                    icon: "error",
-                    title: data?.result
-                })
+                fire("error", data?.result);
             }
-            console.log(data);
             setloading(false)
         }
         catch (e) {
             setloading(false)
-            Swal.fire({
-                icon: "error",
-                title: e?.message || "something went wrong try again later!"
-            })
+            return fire("error", e?.message || "something went wrong try again later!");
         }
     }
 
@@ -120,8 +106,8 @@ function PostQuestion() {
             <Button
                 style={{ display: "flex", alignItems: "center" }}
                 disabled={loading}
-                _loading={loading}
-                className="btn" onClick={createpost} loading={loading} >Submit</Button>
+                isLoading={loading}
+                className="btn" onClick={createpost} >Submit</Button>
         </Box>
     )
 }

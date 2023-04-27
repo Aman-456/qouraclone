@@ -1,5 +1,5 @@
 import Logo from '../../../../../common/Logo';
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import {
   Box,
   Flex,
@@ -24,6 +24,8 @@ import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { IoSearchOutline } from "react-icons/io5"
+import { KEYS } from '../../../../../config/keys';
+import { setProfile } from '../../../../../Store/Features/ProfileSlice';
 
 
 export default function NavBar() {
@@ -34,7 +36,7 @@ export default function NavBar() {
 
   const navigate = useNavigate()
   const handleActive = () => sActive(!active)
-
+  const dispatch = useDispatch()
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -45,9 +47,8 @@ export default function NavBar() {
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
-        localStorage.removeItem("currentUser");
-        localStorage.removeItem("userToken");
-        navigate("/login")
+        dispatch(setProfile(null))
+        // navigate("/login")
       }
     });
   };
@@ -116,14 +117,16 @@ export default function NavBar() {
                 <HStack >
                   <Avatar
                     size={'sm'}
-                    src={undefined}
+                    src={KEYS.api + profile?.profile}
                   />
                   <VStack
                     display={{ base: 'none', md: 'flex' }}
                     alignItems="flex-start"
                     spacing="1px"
+                    pos="relative"
+                    top="5px"
                     ml="2">
-                    <Text fontSize="sm">{profile?.name}</Text>
+                    <Text fontSize="sm" maxW={"150px"} isTruncated>{profile?.name}</Text>
                   </VStack>
 
                 </HStack>

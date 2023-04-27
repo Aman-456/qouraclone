@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    profile: JSON.parse(localStorage.getItem("customer")),
+    profile: JSON.parse(localStorage.getItem("currentUser")) || {},
     loading: false,
 }
 
@@ -11,7 +11,12 @@ export const ProfileSlice = createSlice({
     reducers: {
         setProfile: (state, action) => {
             state.profile = action.payload;
-            localStorage.setItem("customer", JSON.stringify(action.payload))
+            if (action.payload === null) {
+                localStorage.removeItem("currentUser")
+                localStorage.removeItem("userToken");
+            }
+            else
+                localStorage.setItem("currentUser", JSON.stringify(action.payload))
         },
         load: (state) => { state.loading = true },
         unload: (state) => { state.loading = false },

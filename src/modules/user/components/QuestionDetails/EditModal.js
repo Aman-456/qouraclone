@@ -17,6 +17,9 @@ import Editor from '../../../../common/Editor'
 import { TagsInput } from "react-tag-input-component"
 import { useDispatch } from 'react-redux'
 import { setPostdata } from '../../../../Store/Features/posts'
+import { POSTREQUEST } from '../../../../config/requests'
+import { endpoints } from '../../../../config/endpoints'
+import useSwal from '../../../../common/Errors/SwalCall'
 
 
 const EditModal = ({
@@ -53,6 +56,7 @@ const EditQuestion = ({
     const [Body, setBody] = useState(data?.Body)
     const [Title, setTitle] = useState(data?.Title)
     const [Tags, setTags] = useState(data?.Tags)
+    const fire = useSwal()
     const dispatch = useDispatch()
     useEffect(() => {
         setTitle(data?.Title)
@@ -61,10 +65,36 @@ const EditQuestion = ({
     }, [data])
 
     const Editpost = async () => {
-        // edit post logic
-        // dispatch(setPostdata())
-        setOpen(false)
+        try {
+            if (String(Title)?.trim().length < 30) {
+                return fire("", "Add Title properly, minimum 30 characters required")
+            }
 
+            if (String(Body)?.trim().length < 100) {
+                return fire("", "Add Description properly, minimum 100 characters required")
+            }
+            if (Tags?.length < 1 || !Tags) {
+                return fire("", "Add Tags properly, 1 tag required")
+            }
+            setloading(true)
+            const d = await POSTREQUEST(endpoints.editpost, {
+                id: data?._id,
+                Title: Title,
+                Body: Body,
+                Tags: Tags
+            })
+
+            if (d.type === 'success') {
+                dispatch(setPostdata(d.data))
+                setOpen(false)
+            }
+            setloading(false)
+        }
+        catch (e) {
+            console.log(e.message);
+            setloading(false)
+
+        }
     }
 
     useEffect(() => {
@@ -154,6 +184,7 @@ const EditQuestion = ({
                                 background: "var(--primary)"
                             }}
                             _loading={loading}
+                            isLoading={loading}
                             className="btn"
                             onClick={Editpost}>
                             Submit
@@ -178,9 +209,32 @@ const EditCommentReply = ({
     const [loading, setloading] = useState(false)
     const dispatch = useDispatch()
     const update = async () => {
-        // update repy logic
-        // dispatch(setPostdata())
-        setOpen(false)
+        try {
+            setloading(true)
+            let d
+            if (status === "Reply") {
+                d = await POSTREQUEST(endpoints.editreply, {
+                    body: value,
+                    id: data?._id
+                })
+            }
+            else if (status === "Comment") {
+                d = await POSTREQUEST(endpoints.editcomment, {
+                    body: value,
+                    id: data?._id
+                })
+            }
+            if (d?.type === "success") {
+                dispatch(setPostdata(d.data))
+            }
+            setloading(false)
+            console.log(d);
+            setOpen(false)
+        }
+        catch (e) {
+            setloading(false)
+            console.log(e);
+        }
     }
     useEffect(() => {
         return () => {
@@ -216,6 +270,7 @@ const EditCommentReply = ({
                 <ModalFooter>
                     <Button
                         _loading={loading}
+                        isLoading={loading}
                         colorScheme='blue'
                         mr={3} onClick={() => { update() }}>
                         Update

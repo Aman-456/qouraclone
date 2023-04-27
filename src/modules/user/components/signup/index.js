@@ -1,12 +1,12 @@
 /* eslint-disable no-useless-escape */
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import Swal from 'sweetalert2'
 import { endpoints } from '../../../../config/endpoints'
 import { POSTFORMDATA, POSTREQUEST } from '../../../../config/requests'
 import { hideLoader, showLoader } from '../../../../Store/Features/LoaderSlice'
 import { useDispatch } from 'react-redux'
+import useSwal from '../../../../common/Errors/SwalCall'
 
 function SingupPage() {
     const [email, setEmail] = useState("")
@@ -15,6 +15,9 @@ function SingupPage() {
     const [img, setimg] = useState(null)
     const [imgShow, setImgShow] = useState(null)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const fire = useSwal()
+
 
     const file = (e) => {
         const file = e.target.files[0]
@@ -24,13 +27,7 @@ function SingupPage() {
             setImgShow(URL.createObjectURL(file))
         }
         else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid file!',
-                text: "Please select image file only!!!",
-                showCancelButton: true,
-                showConfirmButton: false
-            })
+            fire("error", "Invalid file!", "Please select image file only!!!");
         }
     }
     function handlesubmit(e) {
@@ -47,21 +44,11 @@ function SingupPage() {
                 request();
             }
             else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Weak password!',
-                    text: "Please use a strong password!!!",
-                    showConfirmButton: true
-                })
+                fire("error", "Weak password!", "Please use a strong password!!!");
             }
         }
         else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid email!',
-                text: "Please user a valid email!!!",
-                showConfirmButton: true
-            })
+            fire("error", "Invalid email!", "Please use a valid email!");
         }
 
     }
@@ -88,28 +75,17 @@ function SingupPage() {
             }
             func()
             if (data?.type === "success") {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Signup Success!',
-                    showConfirmButton: true
-                })
+                await fire("success", "Signup success!")
+                navigate("/login")
             }
             else {
-                Swal.fire({
-                    icon: 'error',
-                    title: data?.result || 'Signup Error!',
-                    showConfirmButton: true
-                })
-
+                fire("error", data?.result || "Invalid file!");
             }
         }
         catch (e) {
+            dispatch(hideLoader())
             console.log(e);
-            Swal.fire({
-                icon: 'error',
-                title: data?.result || 'Signup Error!',
-                showConfirmButton: true
-            })
+            fire("error", data?.result || "Invalid file!");
         }
     }
     useEffect(() => {

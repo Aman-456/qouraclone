@@ -5,6 +5,12 @@ import { useNavigate, } from 'react-router-dom'
 import moment from 'moment';
 import CommentForm from "./CommentForm"
 import EditModal from "./EditModal"
+import { useDispatch, useSelector } from "react-redux";
+import { KEYS } from "../../../../config/keys";
+import { useCheckAuthor } from "../../../../common/hooks/useCheckAuthor";
+import { POSTREQUEST } from "../../../../config/requests";
+import { endpoints } from "../../../../config/endpoints";
+import { setPostdata } from "../../../../Store/Features/posts";
 
 function Comments({
     data,
@@ -12,16 +18,38 @@ function Comments({
     loading,
 
 }) {
-
+    const profile = useSelector(state => state.profile.profile)
     const navigate = useNavigate()
     const [Body, setBody] = useState('')
     const [edit, setEdit] = useState(false)
     const [editoropen, seteditoropen] = useState(false)
     const [isreplyopen, setisreplyopen] = useState(false)
-
+    const { isTextAuthor } = useCheckAuthor()
+    const dispatch = useDispatch()
     const deleteit = async (e) => {
-        //    delete commetn logic
+        try {
+            let d;
+            if (e?.reply) {
+                d = await POSTREQUEST(endpoints.deletecomment, { id: e?._id })
+            }
+            else {
+                d = await POSTREQUEST(endpoints.deletecomment, { id: e?._id })
+            }
+            if (d?.type === "success")
+                dispatch(setPostdata(d.data))
+
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
+    const handlenavigate = (id) => {
+        if (data?.Author?._id === profile?._id) {
+            navigate("/profile")
+        }
+        else navigate(`/user/${id}`)
+    }
+
     useEffect(() => {
         setBody(null)
         setEdit(null)
@@ -56,7 +84,7 @@ function Comments({
                                 <Box
                                     background={"var(--lightGrey)"}
                                     style={{ cursor: "pointer" }}
-                                    onClick={() => navigate(`/user/${123}`)}
+                                    onClick={() => handlenavigate(e?.Author?._id)}
                                     className={`icondiv user`}>
                                     {/* <UserOutlined /> */}
                                     <Avatar
@@ -65,8 +93,9 @@ function Comments({
                                             height: "22px",
                                             objectFit: "cover",
                                             borderRadius: "50%",
+                                            marginRight: "2px"
                                         }}
-                                        src={undefined}
+                                        src={KEYS.api + e?.Author?.profile}
                                     />
                                     {e?.Author?.name}
                                 </Box>
@@ -104,32 +133,33 @@ function Comments({
                                     e?.reply?.length > 1 && " Toggle " + e?.reply?.length + " replies"}
                             </Button>
                         }
-                        {/* is text author */}
                         {
-                            <Fragment>
-                                <Button
-                                    background={"var(--primary)"}
-                                    onClick={() => setEdit(true)}>
-                                    <Image
-                                        w={"20px"}
-                                        src={"/images/icons/edit.png"} alt="" />
-                                </Button>
-                                <Button
-                                    background={"var(--red)"}
-                                    onClick={() => deleteit(e)}>
-                                    <Image
-                                        w={"14px"}
-                                        src={"/images/icons/delete.png"} alt="" />
-                                </Button>
-                                {
-                                    edit &&
-                                    <EditModal
-                                        status={e?.reply ? "Comment" : "Reply"}
-                                        open={edit}
-                                        data={e}
-                                        setOpen={setEdit} />
-                                }
-                            </Fragment>
+                            isTextAuthor(e?.Author?._id) ?
+                                <Fragment>
+                                    <Button
+                                        background={"var(--primary)"}
+                                        onClick={() => setEdit(true)}>
+                                        <Image
+                                            w={"20px"}
+                                            src={"/images/icons/edit.png"} alt="" />
+                                    </Button>
+                                    <Button
+                                        background={"var(--red)"}
+                                        onClick={() => deleteit(e)}>
+                                        <Image
+                                            w={"14px"}
+                                            src={"/images/icons/delete.png"} alt="" />
+                                    </Button>
+                                    {
+                                        edit &&
+                                        <EditModal
+                                            status={e?.reply ? "Comment" : "Reply"}
+                                            open={edit}
+                                            data={e}
+                                            setOpen={setEdit} />
+                                    }
+                                </Fragment>
+                                : null
                         }
                     </HStack>
                     <Fragment>

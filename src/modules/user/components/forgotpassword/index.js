@@ -1,19 +1,71 @@
 
 import React, { useState, Fragment } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import useSwal from '../../../../common/Errors/SwalCall'
+import { POSTREQUEST } from '../../../../config/requests'
+import { endpoints } from '../../../../config/endpoints'
+import { useDispatch } from 'react-redux'
+import { hideLoader, showLoader } from '../../../../Store/Features/LoaderSlice'
 
 
 
 function ForgotPage() {
-    const [email, setEmail] = useState("")
+    const [email, setEmail] = useState(sessionStorage.getItem("email") || "")
+    const [otp, setotp] = useState("")
     const [password, setPassword] = useState("")
-    const [visible, setvisible] = useState(1)
-
+    const [visible, setvisible] = useState(sessionStorage.getItem("visible") || 1)
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const fire = useSwal()
     async function handlesubmit() {
-        //  server logic
-        setvisible(2)
+        try {
+            dispatch(showLoader())
+            var data = null
+            if (visible === 1) {
+                if (!email)
+                    return fire("", "use a valid email")
+                data = await POSTREQUEST(endpoints.otpsend, { email })
+            }
+            if (visible === 2) {
+                if (!otp)
+                    return fire("", "enter an otp")
+                const obj = { email, number: otp };
+                data = await POSTREQUEST(endpoints.otpverify, obj)
+            }
+            if (visible === 3) {
+                if (!(password.length >= 8 && /[0-9]/.test(password) && /[&._-]/.test(password))) {
+                    return fire("error", "use a strong password!")
+                }
+                const obj = { email, password };
+                data = await POSTREQUEST(endpoints.passwordchange, obj)
+            }
+            if (data === null || data.type === "failure") {
+                fire("error", data.result);
+            }
+            else if (data.type === 'success') {
+                if (visible === 1) {
+                    sessionStorage.setItem("email", email)
+                    sessionStorage.setItem("visible", 2)
+                    setvisible(2)
+                }
+                else if (visible === 2) {
+                    setvisible(3)
+                }
+                else if (visible === 3) {
+                    sessionStorage.removeItem("email")
+                    sessionStorage.removeItem("visible")
+                    navigate("/login")
+                }
+                fire("success", data.result,);
+            }
+            dispatch(hideLoader())
+        }
 
+        catch (e) {
+            dispatch(hideLoader())
+            fire("error", e.message)
+        }
     }
 
     return (
@@ -67,6 +119,23 @@ function ForgotPage() {
                     }
                     {
                         visible === 2 &&
+                        <Fragment>
+                            <div className={'inputArea'}>
+                                <h4>Enter Your Otp*</h4>
+                                <input
+                                    autoComplete='on'
+                                    className='shadow1'
+                                    type="text"
+                                    value={otp}
+                                    onChange={(e) => setotp(e.target.value)} />
+                            </div>
+                            <div className={'inputArea'}>
+                                <input type="submit" className="btn" value="Verify Otp" />
+                            </div>
+                        </Fragment>
+                    }
+                    {
+                        visible === 3 &&
                         <Fragment>
                             <div className={'inputArea'}>
                                 <h4>Enter New Password*</h4>

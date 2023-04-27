@@ -6,13 +6,16 @@ import { hideLoader, showLoader } from '../../../../Store/Features/LoaderSlice'
 import { useDispatch } from 'react-redux'
 import { POSTREQUEST } from '../../../../config/requests'
 import { endpoints } from '../../../../config/endpoints'
-import Swal from 'sweetalert2'
+import { setProfile } from '../../../../Store/Features/ProfileSlice'
+import useSwal from '../../../../common/Errors/SwalCall'
 
 function SinginPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const fire = useSwal()
+
     async function handlesubmit() {
         try {
             const values = {
@@ -26,27 +29,18 @@ function SinginPage() {
 
             func()
             if (data?.type === "success") {
-
-                localStorage.setItem("currentUser", JSON.stringify(data.result))
                 localStorage.setItem("userToken", data.result?.token)
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Signin Success!',
-                    showConfirmButton: true
-                })
+                dispatch(setProfile(data.result))
                 navigate("/")
             }
             else {
-                Swal.fire({
-                    icon: 'error',
-                    title: data?.result || 'Signin Error!',
-                    showConfirmButton: true
-                })
-
+                fire("error", data?.result || "Signin error!");
             }
         }
         catch (e) {
             console.log(e);
+            fire("error", e?.message);
+
         }
     }
 

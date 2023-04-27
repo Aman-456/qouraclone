@@ -1,7 +1,8 @@
 import { Avatar, Box, Button, Heading, HStack, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text } from "@chakra-ui/react"
 import React, { Fragment, useEffect, useState } from 'react'
-import { useNavigate, } from 'react-router-dom'
+import { useNavigate, useParams, } from 'react-router-dom'
 import {
+    AiOutlineArrowDown,
     AiOutlinePushpin,
 } from "react-icons/ai"
 
@@ -15,53 +16,201 @@ import CommentForm from "./CommentForm"
 import { ArrowDownIcon, HamburgerIcon } from "@chakra-ui/icons"
 import EditModal from "./EditModal"
 import { useDispatch, useSelector } from "react-redux";
-import { questiondetails } from "../../../../common/data";
 import { setPostdata } from "../../../../Store/Features/posts";
+import { POSTREQUEST } from "../../../../config/requests";
+import { endpoints } from "../../../../config/endpoints";
+import { hideLoader, showLoader } from "../../../../Store/Features/LoaderSlice";
+import { KEYS } from "../../../../config/keys";
+import useSwal from "../../../../common/Errors/SwalCall";
+import { useCheckAuthor } from "../../../../common/hooks/useCheckAuthor";
+import Swal from "sweetalert2";
 
 function QuestionWrapper() {
     const dispatch = useDispatch();
-    dispatch(setPostdata(questiondetails))
     const data = useSelector(state => state.post.postdata)
+    const profile = useSelector(state => state.profile.profile)
 
-
-
-    const [loading, setloading] = useState(false)
     const [Body, setBody] = useState('')
-    const id = data?._id
+    const { id } = useParams()
     const [isCommentOpen, setisCommentOpen] = useState(data?._id)
     const [editoropen, seteditoropen] = useState(false)
     const [editQuestion, seteditQuestion] = useState(false)
-
+    const [loading, setloading] = useState(false)
+    const { isAuthor, isLikedAuthor, isTextAuthor, isUnlikedAuthor } = useCheckAuthor(data)
+    const fire = useSwal()
     const navigate = useNavigate()
 
     useEffect(() => {
-        setisCommentOpen(data?._id)
-    }, [data?._id])
+        if (id) getpostdata()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id])
 
-
+    const getpostdata = async () => {
+        try {
+            dispatch(showLoader())
+            const res = await POSTREQUEST(endpoints.singlepost, { id },)
+            if (res.type === "success") {
+                dispatch(setPostdata(res.result))
+            }
+            dispatch(hideLoader())
+        }
+        catch (e) {
+            getpostdata()
+        }
+    }
     const postcomment = async (e, id, reply) => {
-        //   comment login
+        try {
+            if (!e) {
+                throw new Error("Add something in Editor before posting!")
+            }
+            var dd = null
+            setloading(true)
+            if (data?.Comments && !reply) {
+                dd = await POSTREQUEST(endpoints.comment, { id, body: e })
+                if (dd?.type === 'success') {
+                    dispatch(setPostdata(dd?.data))
+                }
+                else {
+                    fire("error", dd.result)
+                }
+            }
+            else {
+                dd = await POSTREQUEST(endpoints.reply, { id, body: e })
+                if (dd?.type === 'success') {
+                    dispatch(setPostdata(dd?.data))
+                }
+                else {
+                    fire("error", dd.result)
+                }
+
+            }
+            setloading(false)
+            seteditoropen(false)
+        }
+        catch (e) {
+            console.log(e);
+            fire("error", e?.message || e)
+            setBody("")
+            setloading(false)
+            seteditoropen(false)
+        }
+    }
+    const like = async (status) => {
+        try {
+            if (loading) return
+            setloading(true)
+            var d = null
+            if (status === "like") {
+                d = await POSTREQUEST(endpoints.like, { id, type: "like" })
+                if (d?.type === 'success')
+                    dispatch(setPostdata(d.data))
+                else {
+                    fire("error", d.result)
+                }
+            }
+            else if (status === "unlike") {
+                d = await POSTREQUEST(endpoints.like, { id, type: "unlike" })
+                if (d?.type === 'success')
+                    dispatch(setPostdata(d.data))
+                else {
+                    fire("error", d.result)
+                }
+            }
+            setloading(false)
+        }
+        catch (e) {
+            setloading(false)
+            console.log(e);
+        }
+    }
+    const unlike = async (status) => {
+        try {
+            if (loading) return
+            setloading(true)
+            var d = null
+            if (status === "like") {
+                d = await POSTREQUEST(endpoints.unlike, { id, type: "like" })
+                if (d?.type === 'success')
+                    dispatch(setPostdata(d.data))
+                else {
+                    fire("error", d.result)
+                }
+            }
+            else if (status === "unlike") {
+                d = await POSTREQUEST(endpoints.unlike, { id, type: "unlike" })
+                if (d?.type === 'success')
+                    dispatch(setPostdata(d.data))
+                else {
+                    fire("error", d.result)
+                }
+            }
+            setloading(false)
+        }
+        catch (e) {
+            setloading(false)
+            console.log(e);
+        }
     }
 
-    const voting = async (status) => {
-        //    voting logic
-    }
     const savequestion = async () => {
-        //   bookmark question logic
+        try {
+            setloading(true)
+            const d = await POSTREQUEST(endpoints.addtosave, { id })
+            if (d?.type === 'success') {
+                dispatch(setPostdata(d?.data))
+            }
+            setloading(false)
+        }
+        catch (e) {
+            console.log(e);
+            setloading(false)
+        }
     }
 
     const removesavequestion = async () => {
-        // remove bookmark logic
+        try {
+            if (loading) return
+            setloading(true)
+            const d = await POSTREQUEST(endpoints.removefromsave, { id })
+            if (d?.type === 'success') {
+                dispatch(setPostdata(d?.data))
+            }
+            setloading(false)
+        }
+        catch (e) {
+            console.log(e);
+            setloading(false)
+        }
     }
     const deleteit = (e) => {
-        //    delete question logic
+        try {
+            Swal.fire("question", "Are you sure you want to delete this question?")
+                .then(async (e) => {
+                    if (e.isConfirmed) {
+                        let d = await POSTREQUEST(endpoints.deletepost, { id: data?._id })
+                        if (d?.type === "success")
+                            navigate("/")
+                        else {
+                            fire("error", d?.result)
+                        }
+                    }
+                })
+
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+    const handlenavigate = (id) => {
+        if (data?.Author?._id === profile?._id) {
+            navigate("/profile")
+        }
+        else navigate(`/user/${id}`)
     }
 
     useEffect(() => {
         return () => {
             setBody(null)
-            setloading(null)
-            setloading(null)
             seteditoropen(null)
         }
     }, [])
@@ -71,6 +220,7 @@ function QuestionWrapper() {
         commentcount++;
         e?.reply?.map(e => commentcount++)
     })
+
     return (
         <Stack
             shadow={"md"}
@@ -90,27 +240,33 @@ function QuestionWrapper() {
                     size={"lg"}>
                     {data?.Title}
 
-                    <Menu >
-                        <MenuButton
-                            as={IconButton}
-                            aria-label='Options'
-                            ml={"10px"}
-                            icon={<HamburgerIcon />}
-                        />
-                        <MenuList >
-                            <MenuItem
-                                onClick={() => seteditQuestion(true)}
-                                fontSize={"16px"}>
-                                Edit Post
-                            </MenuItem>
 
-                            <MenuItem
-                                onClick={() => deleteit()}
-                                fontSize={"16px"}>
-                                Delete Post
-                            </MenuItem>
-                        </MenuList>
-                    </Menu>
+                    {
+                        isAuthor ?
+                            <Menu >
+                                <MenuButton
+                                    as={IconButton}
+                                    aria-label='Options'
+                                    ml={"10px"}
+                                    icon={<HamburgerIcon />}
+                                />
+                                <MenuList >
+                                    <MenuItem
+                                        onClick={() => seteditQuestion(true)}
+                                        fontSize={"16px"}>
+                                        Edit Post
+                                    </MenuItem>
+
+                                    <MenuItem
+                                        onClick={() => deleteit()}
+                                        fontSize={"16px"}>
+                                        Delete Post
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
+                            : null
+                    }
+
 
                     {
                         editQuestion &&
@@ -157,20 +313,20 @@ function QuestionWrapper() {
                     <div>
                         <Box
                             onClick={
-                                data?.saved?._id ?
+                                data?.saved ?
                                     removesavequestion :
                                     savequestion
                             }
                             className={'icondiv'}
-                            background={data?.saved?._id ? "var(--red)" : "ButtonShadow"}
-                            color={data?.saved?._id ? "white" : undefined}
+                            background={data?.saved ? "var(--red)" : "ButtonShadow"}
+                            color={data?.saved ? "white" : undefined}
                         >
                             <AiOutlinePushpin />
                         </Box>
                         <Box
                             background={"ButtonShadow"}
                             style={{ cursor: "pointer" }}
-                            onClick={() => navigate(`/user/${123}`)}
+                            onClick={() => handlenavigate(data?.Author?._id)}
                             className={`icondiv user `}>
                             <Avatar
                                 style={{
@@ -178,8 +334,9 @@ function QuestionWrapper() {
                                     height: "22px",
                                     objectFit: "cover",
                                     borderRadius: "50%",
+                                    marginRight: "2px"
                                 }}
-                                src={undefined}
+                                src={KEYS.api + data?.Author?.profile}
 
                             />
                             {data?.Author?.name || " Test name"}
@@ -235,40 +392,74 @@ function QuestionWrapper() {
                 mb={"10px !important"}
                 mt={"20px !important"}>
 
-                {/* likes */}
                 <HStack
                     spacing={"5"}
                     justify={"center"}>
+                    {
+                        !isUnlikedAuthor ?
+                            <Fragment>
+                                {
+                                    !isLikedAuthor ?
+                                        <Button
+                                            className={'left'}
+                                            onClick={e => like("like")}>
+                                            Upvote
+                                            <AiOutlineArrowDown
+                                                style={{
+                                                    marginLeft: "10px",
+                                                }}
+                                            />
+                                        </Button>
+                                        :
+                                        <Button
+                                            background={"blue.600"}
+                                            color="white"
+                                            className={'left'}
+                                            onClick={e => like("unlike")}>
+                                            Upvoted
+                                            <AiOutlineArrowDown
+                                                style={{
+                                                    marginLeft: "10px",
+                                                }}
+                                            />
+                                        </Button>
+                                }
+                            </Fragment>
+                            : null
+                    }
 
-
-                    <Fragment>
-
-                        <Button
-                            className={'left'}
-                            onClick={e => voting("like")}>
-                            Upvote
-                            <ArrowDownIcon
-                                style={{
-                                    marginLeft: "10px",
-                                }}
-                            />
-                        </Button>
-
-                        <Button
-                            background={"var(--red)"}
-                            color="white"
-                            className={'left'}
-                            onClick={e => voting("unlike")}>
-                            Downvote
-                            <ArrowDownIcon
-                                style={{
-                                    marginLeft: "10px",
-                                }}
-                            />
-                        </Button>
-
-                    </Fragment>
-
+                    {
+                        !isLikedAuthor ?
+                            <Fragment>
+                                {
+                                    !isUnlikedAuthor ?
+                                        <Button
+                                            className={'left'}
+                                            onClick={e => unlike("like")}>
+                                            Downvote
+                                            <ArrowDownIcon
+                                                style={{
+                                                    marginLeft: "10px",
+                                                }}
+                                            />
+                                        </Button>
+                                        :
+                                        <Button
+                                            background={"var(--red)"}
+                                            color="white"
+                                            className={'left'}
+                                            onClick={e => unlike("unlike")}>
+                                            Downvoted
+                                            <ArrowDownIcon
+                                                style={{
+                                                    marginLeft: "10px",
+                                                }}
+                                            />
+                                        </Button>
+                                }
+                            </Fragment>
+                            : null
+                    }
                     <Button
                         className={'left'}
                         color={isCommentOpen === data?._id ? "blue.500" : "black"}

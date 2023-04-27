@@ -27,20 +27,22 @@ function UserRoutes() {
         <React.Suspense fallback={<GetLoader />}>
             <Routes>
                 <Route path="/*" element={<UserLayout />}>
-                    <Route path="*" element={<Error />} />
-                    <Route index element={<LandingPage />} />
-                    <Route path='about' element={<AboutPage />} />
-                    <Route path='profile' element={<Profile />} />
-                    <Route path='chatroom' element={<ChatRoom />} />
-                    <Route path='mytopics' element={<MYQuestion />} />
-                    <Route path='myanswers' element={<MYAnswers />} />
-                    <Route path='user/:id' element={<ViewProfile />} />
-                    <Route path='pinned' element={<PinnedQuesinos />} />
-                    <Route path='addquestion' element={<PostQuestion />} />
-                    <Route path='search/:query' element={<SearchPage />} />
-                    <Route path='question/:id' element={<QuestionDetails />} />
+                    <Route path='/*' element={<Authenticator role={"user"} />}>
+                        <Route path="*" element={<Error />} />
+                        <Route index element={<LandingPage />} />
+                        <Route path='about' element={<AboutPage />} />
+                        <Route path='profile' element={<Profile />} />
+                        <Route path='chatroom' element={<ChatRoom />} />
+                        <Route path='mytopics' element={<MYQuestion />} />
+                        <Route path='myanswers' element={<MYAnswers />} />
+                        <Route path='user/:id' element={<ViewProfile />} />
+                        <Route path='pinned' element={<PinnedQuesinos />} />
+                        <Route path='addquestion' element={<PostQuestion />} />
+                        <Route path='search/:query' element={<SearchPage />} />
+                        <Route path='question/:id' element={<QuestionDetails />} />
+                    </Route>
                 </Route>
-                <Route path='/*' element={<Authenticator role={"customer"} Auth />}>
+                <Route path='/*' element={<Authenticator role={"user"} Auth />}>
                     <Route path="login" element={<LoginPage />} />
                     <Route path="signup" element={<SignupPage />} />
                     <Route path='forgotpassword' element={<ForgotPassword />} />

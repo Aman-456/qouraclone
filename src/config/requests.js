@@ -33,13 +33,11 @@ export const POSTREQUEST = async (url, data, setloading) => {
         });
         if (setloading) setloading(false)
         if (error == "Error: HTTP error 401") {
-            return { type: "failure", result: "unAuthorixed!" }
+            return { type: "failure", result: "unAuthorized!" }
         }
         return null;
     }
 };
-
-
 
 export const POSTFORMDATA = async (url, data, setloading) => {
     try {
@@ -68,7 +66,7 @@ export const POSTFORMDATA = async (url, data, setloading) => {
         });
         if (setloading) setloading(false)
         if (error == "Error: HTTP error 401") {
-            return { type: "failure", result: "unAuthorixed!" }
+            return { type: "failure", result: "unAuthorized!" }
         }
         return null;
     }
