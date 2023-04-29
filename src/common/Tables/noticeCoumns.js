@@ -1,11 +1,19 @@
 import { Avatar, Col, Row, Tooltip, Typography } from "antd";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { endpoints } from "../../config/endpoints";
+import { KEYS } from "../../config/keys";
+import { POSTREQUEST } from "../../config/requests";
+import { setData } from "../../Store/Features/DataSlice";
 import { TransparentBtnsAction } from "../Buttons";
+import useSwal from "../Errors/SwalCall";
 
 function useColumns(status) {
     const [columns, setcolumns] = useState([])
     const [data, setdata] = useState([])
-    useLayoutEffect(() => {
+    const [active, setactive] = useState(false)
+    const tabledata = useSelector(state => state.data.data)
+    useEffect(() => {
         if (status === "notice") {
             const cols = [
                 {
@@ -45,7 +53,7 @@ function useColumns(status) {
                     dataIndex: "date",
                     render: (date) => <div className="date">{date}</div>,
                     key: "date",
-                    width: 120,
+                    width: 150,
                 },
                 {
                     title: "Email",
@@ -59,18 +67,6 @@ function useColumns(status) {
                     render: (email) => (
                         <Tooltip placement="topLeft" title={email}>
                             <div className="amount amount"> {email}</div>
-                        </Tooltip>
-                    ),
-                },
-                {
-                    title: "Subject",
-                    dataIndex: "subject",
-                    key: "subject",
-                    ellipsis: { showTitle: true, },
-                    width: 150,
-                    render: (subject) => (
-                        <Tooltip placement="topLeft" title={subject}>
-                            <div className="account amount">{subject}</div>
                         </Tooltip>
                     ),
                 },
@@ -97,64 +93,23 @@ function useColumns(status) {
                             <div className="account amount">{completed}</div>
                         </Tooltip>
                             :
-                            <TransparentBtnsAction className="green" text={"complete"} onClick={() => setcomplete(completed?._id)} />
+                            <TransparentBtnsAction className="green" text={"complete"} onClick={() => setcomplete(completed)} />
                     ),
                 },
 
             ];
             setcolumns(cols)
-            const d = [
-                {
-                    serial: 1,
-                    key: 1,
-                    name: "TEST",
-                    date: new Date().toDateString(),
-                    email: "test@gmail.com",
-                    subject: "test subject",
-                    message: "test messgae",
-                    completed: false,
-                },
-                {
-                    serial: 2,
-                    key: 2,
-                    name: "TEST2",
-                    date: new Date().toDateString(),
-                    email: "test2@gmail.com",
-                    subject: "test subject",
-                    message: "test messgae",
-                    completed: false,
-                },
-                {
-                    serial: 3,
-                    key: "3",
-                    name: "TEST3",
-                    date: new Date().toDateString(),
-                    email: "test2@gmail.com",
-                    subject: "test subject",
-                    message: "test messgae",
-                    completed: false,
-                },
-                {
-                    serial: 4,
-                    key: "4",
-                    name: "John Brown 3",
-                    date: new Date().toDateString(),
-                    email: "test2@gmail.com",
-                    subject: "test subject",
-                    message: "test messgae",
-                    completed: false,
-                },
-                {
-                    serial: 5,
-                    key: "5",
-                    name: "John Brown 3",
-                    date: new Date().toDateString(),
-                    email: "test2@gmail.com",
-                    subject: "test subject",
-                    message: "test messgae",
-                    completed: false,
-                },
-            ];
+            const d = tabledata?.map((e, i) => {
+                return {
+                    serial: i + 1,
+                    key: i + 1,
+                    name: e?.username,
+                    date: new Date(e?.createdAt).toDateString(),
+                    email: e?.email,
+                    message: e?.message,
+                    completed: e?._id,
+                }
+            })
             setdata(d)
         }
         else if (status === "user" || status === "post") {
@@ -173,14 +128,14 @@ function useColumns(status) {
                     width: 50,
                 },
                 {
-                    title: "Name",
+                    title: "Author",
                     dataIndex: "name",
                     key: "name",
                     render: ({ name, img }) => {
                         return (
                             <Row align={"middle"} gutter={[15, 5]} className="nameavatar">
                                 <Col span={5}>
-                                    <Avatar src={img ? img : undefined} />
+                                    <Avatar src={KEYS.api + img} />
                                 </Col>
                                 <Col span={17}>
                                     <Typography>
@@ -203,7 +158,7 @@ function useColumns(status) {
                     dataIndex: "date",
                     render: (date) => <div className="date">{date}</div>,
                     key: "date",
-                    width: 110,
+                    width: 150,
                 },
                 {
                     title: "Id",
@@ -212,7 +167,7 @@ function useColumns(status) {
                     ellipsis: {
                         showTitle: false,
                     },
-                    width: 100,
+                    width: 150,
 
                     render: (id) => (
                         <Tooltip placement="topLeft" title={id}>
@@ -231,7 +186,7 @@ function useColumns(status) {
 
                     render: (likes) => (
                         <Tooltip placement="topLeft" title={likes}>
-                            <div className="amount" > {likes}</div>
+                            <div className="amount" > {likes || 0}</div>
                         </Tooltip>
                     ),
                 },
@@ -266,7 +221,92 @@ function useColumns(status) {
                                 align={"middle"}
                             >
                                 <Col span={24} className="transparent red">
-                                    <TransparentBtnsAction className="red" text={"delete"} />
+                                    <TransparentBtnsAction onClick={() => deletepost(result)} className="red" text={"delete"} />
+                                </Col>
+                            </Row>
+                        );
+                    },
+                },
+            ];
+            const colsusers = [
+                {
+                    title: "Sr#",
+                    dataIndex: "serial",
+                    key: "serial",
+                    render: (text) => {
+                        return (
+                            <Tooltip placement="topLeft" title={text}>
+                                <div className="serial">{text || "1"}</div>
+                            </Tooltip>
+                        );
+                    },
+                    width: 50,
+                },
+                {
+                    title: "Name",
+                    dataIndex: "name",
+                    key: "name",
+                    render: ({ name, img }) => {
+                        return (
+                            <Row align={"middle"} gutter={[15, 5]} className="nameavatar">
+                                <Col span={5}>
+                                    <Avatar src={KEYS.api + img} />
+                                </Col>
+                                <Col span={17}>
+                                    <Typography>
+                                        <Typography.Title
+                                            className="name"
+                                            level={5}
+                                            ellipsis={{ rows: 1 }}
+                                        >
+                                            {name}
+                                        </Typography.Title>
+                                    </Typography>
+                                </Col>
+                            </Row>
+                        );
+                    },
+                    width: 150,
+                },
+                {
+                    title: "Date",
+                    dataIndex: "date",
+                    render: (date) => <div className="date">{date}</div>,
+                    key: "date",
+                    width: 150,
+                },
+                {
+                    title: "Id",
+                    dataIndex: "id",
+                    key: "id",
+                    ellipsis: {
+                        showTitle: false,
+                    },
+                    width: 200,
+
+                    render: (id) => (
+                        <Tooltip placement="topLeft" title={id}>
+                            <div className="amount" > {id}</div>
+                        </Tooltip>
+                    ),
+                },
+                {
+                    title: ("Actions"),
+                    dataIndex: "result",
+                    key: "result",
+                    ellipsis: {
+                        showTitle: false,
+                    },
+                    width: 150,
+                    render: (result) => {
+                        return (
+                            <Row
+                                className="result amount"
+                                justify={"space-between"}
+                                align={"middle"}
+                            >
+                                <Col span={24} className="transparent red">
+                                    <TransparentBtnsAction onClick={() => deleteuser(result)} className="red" text={"delete"} />
                                 </Col>
                             </Row>
                         );
@@ -296,76 +336,219 @@ function useColumns(status) {
                 )
                 newarr.push(columns.slice(find + 1, 20))
             }
-            setcolumns(cols)
-            const d = [
+            setcolumns(status === "user" ? colsusers : cols)
+
+            const d = tabledata?.map((e, i) => {
+                let commentcount = 0;
+                e?.Comments?.forEach(a => {
+                    commentcount++;
+                    a?.reply?.map(e => commentcount++)
+                })
+                return {
+                    serial: i + 1,
+                    key: i + 1,
+                    name: { name: e?.name || e?.Author?.name, img: e?.profile || e?.Author?.profile },
+                    date: new Date(e?.createdAt).toDateString(),
+                    likes: e?.Likes?.count,
+                    comments: commentcount,
+                    id: e?._id,
+                    result: e?._id,
+                }
+            })
+            setdata(d)
+        }
+        else if (status === "reportedusers") {
+            const colsusers = [
                 {
-                    serial: 1,
-                    key: "1",
-                    name: { name: "John Brown", img: null },
-                    date: `01/02/22`,
-                    likes: 100,
-                    comments: 200,
-                    posts: 20,
-                    id: "121321314",
-                    result: "",
+                    title: "Sr#",
+                    dataIndex: "serial",
+                    key: "serial",
+                    render: (text) => {
+                        return (
+                            <Tooltip placement="topLeft" title={text}>
+                                <div className="serial">{text || "1"}</div>
+                            </Tooltip>
+                        );
+                    },
+                    width: 50,
                 },
                 {
-                    serial: 2,
-                    key: "2",
-                    name: { name: "John Brown 2", img: null },
-                    date: `01/02/22`,
-                    likes: 100,
-                    comments: 200,
-                    posts: 20,
-                    id: "121321314",
-                    result: "",
+                    title: "Reported By",
+                    dataIndex: "name",
+                    key: "name",
+                    render: ({ name, img }) => {
+                        return (
+                            <Row align={"middle"} gutter={[15, 5]} className="nameavatar">
+                                <Col span={5}>
+                                    <Avatar src={KEYS.api + img} />
+                                </Col>
+                                <Col span={17}>
+                                    <Typography>
+                                        <Typography.Title
+                                            className="name"
+                                            level={5}
+                                            ellipsis={{ rows: 1 }}
+                                        >
+                                            {name}
+                                        </Typography.Title>
+                                    </Typography>
+                                </Col>
+                            </Row>
+                        );
+                    },
+                    width: 150,
                 },
                 {
-                    serial: 3,
-                    key: "3",
-                    name: { name: "John Brown 3", img: null },
-                    date: `01/02/22`,
-                    likes: 100,
-                    comments: 200,
-                    posts: 20,
-                    id: "121321314",
-                    result: "",
+                    title: "Reported User",
+                    dataIndex: "rname",
+                    key: "name",
+                    render: ({ name, img }) => {
+                        return (
+                            <Row align={"middle"} gutter={[15, 5]} className="nameavatar">
+                                <Col span={5}>
+                                    <Avatar src={KEYS.api + img} />
+                                </Col>
+                                <Col span={17}>
+                                    <Typography>
+                                        <Typography.Title
+                                            className="name"
+                                            level={5}
+                                            ellipsis={{ rows: 1 }}
+                                        >
+                                            {name}
+                                        </Typography.Title>
+                                    </Typography>
+                                </Col>
+                            </Row>
+                        );
+                    },
+                    width: 150,
                 },
                 {
-                    serial: 4,
-                    key: "4",
-                    name: { name: "John Brown 3", img: null },
-                    date: `01/02/22`,
-                    likes: 100,
-                    comments: 200,
-                    posts: 20,
-                    id: "121321314",
-                    result: "",
+                    title: "Date",
+                    dataIndex: "date",
+                    render: (date) => <div className="date">{date}</div>,
+                    key: "date",
+                    width: 150,
                 },
                 {
-                    serial: 5,
-                    key: "5",
-                    name: { name: "John Brown 3", img: null },
-                    date: `01/02/22`,
-                    likes: 100,
-                    comments: 200,
-                    posts: 20,
-                    id: "121321314",
-                    result: "",
+                    title: "Message",
+                    dataIndex: "message",
+                    key: "message",
+                    ellipsis: {
+                        showTitle: false,
+                    },
+                    width: 200,
+
+                    render: (id) => (
+                        <Tooltip placement="topLeft" title={id}>
+                            <div className="amount" > {id}</div>
+                        </Tooltip>
+                    ),
+                },
+                {
+                    title: ("Actions"),
+                    dataIndex: "result",
+                    key: "result",
+                    ellipsis: {
+                        showTitle: false,
+                    },
+                    width: 200,
+                    render: (result) => {
+                        return (
+                            <Row
+                                className="result amount"
+                                justify={"space-between"}
+                                align={"middle"}
+                            >
+                                <Col span={12} className="transparent red">
+                                    <TransparentBtnsAction className="green" onClick={() => { Admin_completereported(result?._id) }} text={"complete"} />
+                                </Col>
+                                <Col span={12} className="transparent red">
+                                    <TransparentBtnsAction onClick={() => setactive(e => e == false ? result?.message : false)} className="green" text={"view"} />
+                                </Col>
+                            </Row>
+                        );
+                    },
                 },
             ];
+            setcolumns(colsusers)
+            const d = tabledata?.map((e, i) => {
+                return {
+                    serial: i + 1,
+                    key: i + 1,
+                    name: { name: e?.by?.name, img: e?.by?.profile },
+                    rname: { name: e?.reported?.name, img: e?.reported?.profile },
+                    date: new Date(e?.createdAt).toDateString(),
+                    message: e?.message,
+                    result: e,
+                }
+            })
             setdata(d)
         }
         return () => {
             setdata([])
             setcolumns([])
+            setactive(false)
         }
-    }, [status])
-
-    const setcomplete = async () => { }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status, tabledata])
+    const dispatch = useDispatch()
+    const fire = useSwal()
+    const setcomplete = async (id) => {
+        const d = await POSTREQUEST(endpoints.Admin_completenotice, { id })
+        console.log(d);
+        if (d?.type === "success") {
+            dispatch(setData(d.result))
+        }
+        else if (d?.result) {
+            fire("error", d?.result,)
+        }
+        else {
+            fire("error", "An Error Occurred")
+        }
+    }
+    const Admin_completereported = async (id) => {
+        const d = await POSTREQUEST(endpoints.Admin_completereported, { id })
+        if (d?.type === "success") {
+            dispatch(setData(d.result))
+        }
+        else if (d?.result) {
+            fire("error", d?.result,)
+        }
+        else {
+            fire("error", "An Error Occurred")
+        }
+    }
+    const deletepost = async (id) => {
+        const d = await POSTREQUEST(endpoints.Admin_deletepost, { id })
+        if (d?.type === "success") {
+            dispatch(setData(d.data))
+        }
+        else if (d?.result) {
+            fire("error", d?.result,)
+        }
+        else {
+            fire("error", "An Error Occurred")
+        }
+    }
+    const deleteuser = async (id) => {
+        const d = await POSTREQUEST(endpoints.Admin_deleteuser, { id })
+        if (d?.type === "success") {
+            dispatch(setData(d.data))
+        }
+        else if (d?.result) {
+            fire("error", d?.result,)
+        }
+        else {
+            fire("error", "An Error Occurred")
+        }
+    }
     return {
         columns,
-        data
+        data,
+        active,
+        setactive
     }
 
 }

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useLayoutEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,6 +11,10 @@ import {
 } from 'chart.js';
 
 import { Line } from 'react-chartjs-2';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '../../../../../Store/Features/LoaderSlice';
+import { GETREQUEST } from '../../../../../config/requests';
+import { endpoints } from '../../../../../config/endpoints';
 
 
 ChartJS.register(
@@ -23,39 +27,46 @@ ChartJS.register(
   Legend
 );
 
-const labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novermber", "December"];
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'User vs Posts chart',
-    },
-  },
-};
 
-const data = {
-  labels: labels,
-  datasets: [
-    {
-      label: 'Users',
-      data: labels.map(() => Math.random() * 1000),
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Posts',
-      data: labels.map(() => Math.random() * 1000),
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
 function Charts() {
+  const [gdata, setgdata] = useState({})
+  const dispatch = useDispatch()
+  useLayoutEffect(() => {
+    get()
+    return () => {
+      setgdata(null)
+    };
+  }, [])
+  const get = async () => {
+    try {
+      dispatch(showLoader())
+      const data = await GETREQUEST(endpoints.Admin_graphdata)
+      setgdata(data)
+      dispatch(hideLoader())
+    }
+    catch (e) {
+      console.log(e);
+      dispatch(hideLoader())
+    }
+  }
+  const data = {
+    labels: gdata?.labels || [],
+    datasets: gdata?.datasets || [],
+  };
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: `User vs Posts chart`,
+      },
+    },
+  };
+
   return (
     <Fragment>
       <Line options={options} data={data} />

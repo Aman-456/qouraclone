@@ -1,7 +1,10 @@
 import { Button, Col, Popover, Row } from "antd";
 import React from "react";
+import { useDispatch } from "react-redux";
 import Icons from "../../../../../common/Icons";
+import { setProfile } from "../../../../../Store/Features/ProfileSlice";
 function Navbar() {
+  const dispatch = useDispatch()
   return (
     <Row
       className="adminNav"
@@ -12,7 +15,7 @@ function Navbar() {
         <Row align={"middle"} justify={"end"}>
           <Col span={6}>
             <Popover content={"Logout"}>
-              <Button type="primary">
+              <Button type="primary" onClick={() => dispatch(setProfile(null))}>
                 <Icons icon="logout" className={"organge"} />
                 Logout
               </Button>

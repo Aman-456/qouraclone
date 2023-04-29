@@ -7,6 +7,10 @@ function Authenticator({ role, Auth }) {
     const profile = useSelector(state => state.profile.profile)
     const { pathname } = useLocation()
     useEffect(() => {
+        if (profile?.email === "systemdesign9904@gmail.com") {
+            if (!pathname.includes("dashboard"))
+                navigate("/dashboard")
+        }
         if (role === "user") {
             if (Auth && profile?._id) {
                 navigate("/")
@@ -18,15 +22,16 @@ function Authenticator({ role, Auth }) {
         }
 
         if (role === "admin") {
-            if (Auth && profile?._id) {
-                navigate("/")
+            if (profile?._id) {
+                if (!pathname.includes("dashboard"))
+                    navigate("/dashboard")
             }
             else if (!profile?.id) {
-                if (!pathname.includes("login") && !pathname.includes("forgot") && !pathname.includes("signup"))
+                if (!pathname.includes("login") && !pathname.includes("forgot"))
                     navigate("/login")
             }
         }
-    }, [pathname, role, navigate, profile?._id, Auth, profile?.id])
+    }, [pathname, role, navigate, profile?._id, Auth, profile?.id, profile?.email])
     return <Outlet />
 }
 

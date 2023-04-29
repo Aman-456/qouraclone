@@ -6,7 +6,7 @@ import { GETREQUEST } from "../../../../config/requests";
 import { setData } from "../../../../Store/Features/DataSlice";
 import { hideLoader, showLoader } from "../../../../Store/Features/LoaderSlice";
 
-function NoticeManagment() {
+function PostMangment() {
   const dispatch = useDispatch();
   useEffect(() => {
     get()
@@ -18,11 +18,10 @@ function NoticeManagment() {
   const get = async () => {
     try {
       dispatch(showLoader("content"));
-      const data = await GETREQUEST(endpoints.Admin_getContacts);
+      const data = await GETREQUEST(endpoints.Admin_getruser);
 
       if (data?.type === "success") {
         dispatch(setData(data.result))
-        console.log({ data: data.result });
       }
       dispatch(hideLoader("content"));
     }
@@ -32,8 +31,8 @@ function NoticeManagment() {
     }
   }
   return (
-    <UserTableWrapper status="notice" text="Notices" />
+    <UserTableWrapper text={"Reported Users"} status="reportedusers" />
   );
 }
 
-export default NoticeManagment;
+export default PostMangment;

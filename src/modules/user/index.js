@@ -16,6 +16,7 @@ const SearchPage = React.lazy(() => import("./components/SearchPage"))
 const MYAnswers = React.lazy(() => import("./components/MYAnswers"))
 const AboutPage = React.lazy(() => import("./components/AboutUs"))
 const UserLayout = React.lazy(() => import("./components/layout"))
+const Contact = React.lazy(() => import("./components/ContactUS"))
 const SignupPage = React.lazy(() => import("./components/signup"))
 const ChatRoom = React.lazy(() => import("./components/chatroom"))
 const LoginPage = React.lazy(() => import("./components/login"))
@@ -35,6 +36,7 @@ function UserRoutes() {
                         <Route path='chatroom' element={<ChatRoom />} />
                         <Route path='mytopics' element={<MYQuestion />} />
                         <Route path='myanswers' element={<MYAnswers />} />
+                        <Route path='contact' element={<Contact />} />
                         <Route path='user/:id' element={<ViewProfile />} />
                         <Route path='pinned' element={<PinnedQuesinos />} />
                         <Route path='addquestion' element={<PostQuestion />} />

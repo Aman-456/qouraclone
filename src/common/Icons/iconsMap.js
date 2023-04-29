@@ -20,7 +20,7 @@ import { MdInsertChart } from "react-icons/md";
 import { TbDiscount2, TbWorld } from "react-icons/tb";
 import { IoIosListBox, IoMdListBox, IoMdLogOut } from "react-icons/io";
 import { IoMail, IoSearch } from "react-icons/io5";
-import { GoArrowDown, GoArrowUp } from "react-icons/go";
+import { GoArrowDown, GoArrowUp, GoReport } from "react-icons/go";
 import { SettingsIcon } from "@chakra-ui/icons";
 
 const cn = "Icon";
@@ -55,4 +55,5 @@ export const iconmap = {
   world: <TbWorld className={cn} style={{ fontSize: "1.5rem" }} />,
   withdraw: <BsCash className={cn} />,
   setting: <BsGear className={cn} />,
+  report: <GoReport className={cn} />,
 };

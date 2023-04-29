@@ -39,4 +39,19 @@ module.exports.endpoints = {
     otheranswers: "api/post/otheranswers",
     deletecomment: "api/post/deletecomment",
     removefromsave: "api/post/removefromsave",
+
+    // search
+    search: `api/search/?query=`,
+
+    // admin
+    Admin_getuser: "api/admin/users",
+    Admin_getposts: "api/admin/posts",
+    Admin_deleteuser: "api/admin/deleteuser",
+    Admin_deletepost: "api/admin/deletepost",
+    Admin_getruser: "api/admin/reportedusers",
+    Admin_graphdata: "api/admin/Admin_graphdata",
+    Admin_getContacts: "api/admin/Admin_getreports",
+    Admin_postreports: "api/admin/Admin_postreports",
+    Admin_completenotice: "api/admin/completenotice",
+    Admin_completereported: "api/admin/completereported",
 }

@@ -13,7 +13,7 @@ function App() {
       <React.Suspense fallback={<GetLoader />}>
         <Routes>
           <Route index path="/*" element={<User />} />
-          <Route path="/dashboard/*" element={<Dashboard />} />
+          <Route path="dashboard/*" element={<Dashboard />} />
         </Routes>
       </React.Suspense>
     </Fragment>
