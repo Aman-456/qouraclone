@@ -19,17 +19,28 @@ import {
   Text,
   VStack
 } from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
+import { KEYS } from "../../../../config/keys";
+import useSwal from "../../../../common/Errors/SwalCall";
+import { useNavigate } from "react-router-dom";
+import { setProfile } from "../../../../Store/Features/ProfileSlice";
+import { POSTFORMDATA, POSTREQUEST, PUTREQUEST } from "../../../../config/requests";
+import { endpoints } from "../../../../config/endpoints";
+import Swal from "sweetalert2";
 
 function Main() {
-  const [profile, setprofile] = useState({
-    bio: "Profile user description will be here"
-  })
-  const [input, setinput] = useState("");
-  const [editprofile, seteditprofile] = useState(false)
+
+  const profile = useSelector(state => state.profile.profile)
   const [file, setfile] = useState()
-  const [loading, setloading] = useState(profile?.profile ? true : false)
-  const [userList, setuserList] = useState([])
+  const [input, setinput] = useState("");
+  const condition = !profile?.bio || profile?.bio === ""
+  const [editprofile, seteditprofile] = useState(condition ? true : false)
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const fire = useSwal()
   const ref = useRef()
+
   useEffect(() => {
     if (editprofile) {
       ref.current.focus();
@@ -38,19 +49,81 @@ function Main() {
   }, [editprofile])
   // friendlist
 
+  useEffect(() => {
+    const get = async () => {
+      const data = await POSTREQUEST(endpoints.getSingleUser, { id: profile?._id })
+      if (data?.type === "success") {
+        console.log(data.result);
+        dispatch(setProfile(data.result))
+      }
+    }
+    get()
+  }, [])
   const update = async () => {
-    //  updat 
+    try {
+      if (input === "" || input === null) {
+        return fire("error", "Please Add something before updating")
+      }
+      if (input.length > 130) {
+        return fire("error", "Maximum of 130 characters should be entered!")
+      }
+      const data = await PUTREQUEST(endpoints.updateStatus, { id: profile._id, bio: input })
+      if (data?.type === "success") {
+        dispatch(setProfile(data?.result))
+      }
+      seteditprofile(false)
+    }
+    catch (e) {
+      console.log(e);
+
+    }
   }
   const updateprofile = async () => {
-    // update profile logic
+    try {
+      if (!file) {
+        return fire("error", "Please Add Profile before updating")
+      }
+      const formdata = new FormData()
+      formdata.append("image", file)
+      const data = await POSTFORMDATA(endpoints.updateprofile, formdata)
+      if (data?.type === "success") {
+        dispatch(setProfile(data?.result))
+      }
+      setfile(null)
+      seteditprofile(false)
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
 
-  const edit = async () => seteditprofile(e => !e)
+  const edit = async () => {
+    seteditprofile(e => !e)
+  }
   const deleteuser = async () => {
-    // delete profile logic
+    Swal.fire({
+      icon: "question",
+      text: "Are you sure you want to delete this account?"
+    }).then(async e => {
+      if (e.isConfirmed) {
+        const data = await POSTREQUEST(endpoints.delete)
+        if (data?.type === "success") {
+          Swal.fire({
+            icon: "success",
+            text: "Account Removed from Forum"
+          }).then(e => {
+            if (e.isConfirmed) {
+              localStorage.removeItem("userToken")
+              localStorage.removeItem("currentUser")
+              dispatch(setProfile(null))
+              navigate("/")
+            }
+          })
+        }
+      }
+    })
   }
 
-  const API = ""
   return (
     <Box w={"100%"} className={`profilecontainer`} >
       <VStack
@@ -66,12 +139,10 @@ function Main() {
             w="200px"
             shadow={"xl"}
             className="profile"
-            src={file ? URL.createObjectURL(file) : (API + "/" + profile?.profile)}
+            src={file ? URL.createObjectURL(file) : (KEYS.api + profile?.profile)}
             fallbackSrc='https://via.placeholder.com/150'
             alt="profile"
-            onLoad={() => { setloading(false); console.log(file); }}
           />
-
           <Flex justifyContent={"center"} gap="10px" mt={"10px"}>
             {
               !file &&
@@ -88,7 +159,7 @@ function Main() {
             }
             {
               file &&
-              <button onClick={e => setfile(null)} className="btn">
+              <button onClick={e => setfile(undefined)} className="btn">
                 <GiCancel />
               </button>
             }
@@ -143,7 +214,7 @@ function Main() {
       <div className={`containTwo`}>
         <Box>
           {
-            profile.bio !== "" &&
+            profile?.bio !== "" &&
             <Fragment>
               {
                 !editprofile ?
@@ -223,34 +294,13 @@ function Main() {
               <QuestionList query={"saved"} />
             </TabPanel>
             <TabPanel>
-              <UserList
-                userList={userList}
-                setuserList={setuserList}
-                setprofile={setprofile}
-                friends
-                pending={null}
-                request={null}
-              />
+              <UserList friends />
             </TabPanel>
             <TabPanel>
-              <UserList
-                userList={userList}
-                setuserList={setuserList}
-                setprofile={setprofile}
-                friends={null}
-                pending={null}
-                request
-              />
+              <UserList request />
             </TabPanel>
             <TabPanel>
-              <UserList
-                userList={userList}
-                setuserList={setuserList}
-                setprofile={setprofile}
-                friends={null}
-                pending
-                request={null}
-              />
+              <UserList pending />
             </TabPanel>
           </TabPanels>
         </Tabs>

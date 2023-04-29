@@ -7,7 +7,7 @@ import GetLoader from '../../common/GetLoader';
 
 const QuestionDetails = React.lazy(() => import("./components/QuestionDetails"))
 const ForgotPassword = React.lazy(() => import("./components/forgotpassword"))
-const PinnedQuesinos = React.lazy(() => import("./components/MYQuestion"))
+const PinnedQuesinos = React.lazy(() => import("./components/PinnedQuesinos"))
 const PostQuestion = React.lazy(() => import("./components/PostQuestion"))
 const LandingPage = React.lazy(() => import("./components/landingpage"))
 const ViewProfile = React.lazy(() => import("./components/ViewProfile"))

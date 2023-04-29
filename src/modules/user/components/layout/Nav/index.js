@@ -21,8 +21,8 @@ import {
 } from '@chakra-ui/react';
 
 import Swal from "sweetalert2";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5"
 import { KEYS } from '../../../../../config/keys';
 import { setProfile } from '../../../../../Store/Features/ProfileSlice';
@@ -58,7 +58,10 @@ export default function NavBar() {
       navigate(`/search/${searchText}`, { state: tags })
   }
   const profile = useSelector((state) => state.profile.profile)
-
+  const { pathname } = useLocation()
+  useEffect(() => {
+    sActive(false)
+  }, [pathname])
   return (
     <>
       <Box

@@ -1,22 +1,30 @@
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect } from 'react'
 import FORUM from '../../../../common/Forum'
-import { posts } from "../../../../common/data"
 import { useDispatch } from 'react-redux'
-import { setPosts } from '../../../../Store/Features/posts'
 import { hideLoader, showLoader } from '../../../../Store/Features/LoaderSlice'
+import { GETREQUEST } from '../../../../config/requests'
+import { endpoints } from '../../../../config/endpoints'
+import { setPosts } from '../../../../Store/Features/posts'
 function MYAnswers() {
     const dispatch = useDispatch()
-
-    useLayoutEffect(() => {
-        dispatch(showLoader())
-        dispatch(setPosts(posts))
-        const timeout = setTimeout(() => { dispatch(hideLoader()) }, 1000);
-        return () => {
-            clearTimeout(timeout)
-            dispatch(setPosts([]))
-
+    const get = async () => {
+        try {
+            dispatch(showLoader())
+            const data = await GETREQUEST(endpoints.myanswers)
+            dispatch(setPosts(data?.result || []))
+            dispatch(hideLoader())
         }
-    }, [dispatch])
+        catch (e) {
+            console.log(e);
+            dispatch(hideLoader())
+        }
+    }
+    useEffect(() => {
+        get()
+        return () => {
+            dispatch(hideLoader())
+        }
+    }, [])
 
     return <FORUM />
 

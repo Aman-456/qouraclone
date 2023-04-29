@@ -1,35 +1,19 @@
-import { List, ListItem, Button, Box, Text, Image } from "@chakra-ui/react"
-import React, { useEffect, useState } from 'react';
+import { List, ListItem, Box, Image } from "@chakra-ui/react"
+import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
+import { KEYS } from "../../../../../../config/keys";
 
-const App = ({ friends, pending, request, id }) => {
-    const [data, setData] = useState([]);
+const App = () => {
+    const list = useSelector(state => state.profile.user.friends)
     const navigate = useNavigate()
-    useEffect(() => {
-
-        const getList = async (id) => {
-            //get this users friends list logic
-        }
-        const getrequestList = async (id) => {
-            //get this users requests list logic
-        }
-        const getpendingList = async (id) => {
-            //get this users pending list logic
-        }
-
-
-    }, [request, pending, friends, id]);
-
-
     return (
         <Box>
-
             {
-                data?.map((e, i) => <List key={i} spacing={3} w="100%">
-                    <ListItem className="userItem" >
+                list?.map((e, i) => <List key={i} spacing={3} w="100%">
+                    <ListItem className="userItem">
                         <Image
                             className="Avatart  profile"
-                            src={undefined}
+                            src={KEYS.api + e?.profile}
                             fallback
                             h="70px"
                             w={"50px"}
@@ -37,39 +21,26 @@ const App = ({ friends, pending, request, id }) => {
                             objectFit={"cover"}
                         />
                         <span
+                            style={{ cursor: "pointer" }}
                             onClick={() => navigate(`/user/${e._id}`)}>
                             {e.name}
                         </span>
-
-
-                        {
-                            (pending && !friends && !request) &&
-                            <Box
-                                marginTop={'5px'}
-                                marginLeft="auto"
-                                display={"flex"}
-                                gap={".5rem"}>
-                                <Button
-                                    color={"white"}
-                                    background={"var(--primary)"}>
-                                    Pending Request
-                                </Button>
-                            </Box>
-                        }
-
                     </ListItem>
                 </List>
                 )
             }
             {
-                data?.length === 0 &&
-                <Text
-                    minH={"200px"}
+                list?.length === 0 &&
+                <Box
                     display={"flex"}
-                    alignItems="center"
-                    justifyContent={"center"}>
-                    Nothing to show here
-                </Text>
+                    flexDirection="column"
+                    alignItems={"center"}
+                    gap="1rem"
+                    minH={"200px"}>
+                    <img
+                        style={{ margin: "0 auto" }}
+                        src={"/images/undraw.svg"} alt="img" width='150px' height='150px'></img>
+                </Box>
             }
         </Box>
 

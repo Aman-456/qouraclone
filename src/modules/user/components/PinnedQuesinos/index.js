@@ -1,23 +1,30 @@
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect, } from 'react'
 import FORUM from '../../../../common/Forum'
-import { posts } from "../../../../common/data"
 import { useDispatch } from 'react-redux'
 import { setPosts } from '../../../../Store/Features/posts'
 import { hideLoader, showLoader } from '../../../../Store/Features/LoaderSlice'
+import { GETREQUEST } from '../../../../config/requests'
+import { endpoints } from '../../../../config/endpoints'
 function PinnedQuesinos() {
     const dispatch = useDispatch()
-
-    useLayoutEffect(() => {
-        dispatch(showLoader())
-        dispatch(setPosts(posts))
-        const timeout = setTimeout(() => { dispatch(hideLoader()) }, 1000);
+    useEffect(() => {
+        get()
         return () => {
-            clearTimeout(timeout)
-            dispatch(setPosts([]))
-
+            dispatch(hideLoader())
         }
-    }, [dispatch])
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+    const get = async () => {
+        try {
+            dispatch(showLoader())
+            const data = await GETREQUEST(endpoints.saved)
+            dispatch(setPosts(data?.result || []))
+            dispatch(hideLoader())
+        }
+        catch (e) {
+            dispatch(hideLoader())
+        }
+    }
     return <FORUM />
 
 }

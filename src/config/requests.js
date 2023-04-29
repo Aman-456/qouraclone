@@ -44,6 +44,9 @@ export const POSTFORMDATA = async (url, data, setloading) => {
         if (setloading) setloading(true)
         const response = await fetch(KEYS.api + url, {
             method: 'POST',
+            headers: {
+                authorization: `Bearer ${localStorage.getItem("userToken")}`
+            },
             body: data,
         });
         if (!response.ok) {
@@ -108,29 +111,41 @@ export const GETREQUEST = async (url, setloading) => {
     }
 }
 
-export const PUTREQUEST = async (url, data) => {
+export const PUTREQUEST = async (url, data, setloading) => {
     try {
+        if (setloading) setloading(true)
         const response = await fetch(KEYS.api + url, {
             method: 'PUT',
             headers: {
-                authorization: `Bearer ${localStorage.getItem("userToken")}`,
                 'Content-Type': 'application/json',
+                authorization: `Bearer ${localStorage.getItem("userToken")}`,
             },
             body: JSON.stringify(data),
         });
+
         if (!response.ok) {
             const errorData = await response.json();
             const errorMessage = errorData.message || errorData.error || `HTTP error ${response.status}`;
+
+            if (errorData.type === "failure") {
+                if (setloading) setloading(false)
+                return errorData
+            }
             throw new Error(errorMessage);
         }
         const jsonData = await response.json();
+        if (setloading) setloading(false)
         return jsonData;
     } catch (error) {
         console.table({
-            method: "PUT",
+            method: "POST",
             message: `${error}`,
             url: `${KEYS.api + url}`
         });
+        if (setloading) setloading(false)
+        if (error == "Error: HTTP error 401") {
+            return { type: "failure", result: "unAuthorized!" }
+        }
         return null;
     }
 };

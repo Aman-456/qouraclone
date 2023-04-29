@@ -3,6 +3,7 @@ import { Avatar, Box, Heading, Icon, Stack, Text, VStack } from "@chakra-ui/reac
 import moment from 'moment';
 import { ArrowDownIcon, ArrowUpIcon, ChatIcon } from "@chakra-ui/icons"
 import { useNavigate } from 'react-router-dom';
+import { KEYS } from '../../config/keys';
 function Index({ data, admin }) {
     const text = useRef()
     const navigate = useNavigate()
@@ -85,7 +86,7 @@ function Index({ data, admin }) {
                                     data?.Author &&
                                     <Avatar
                                         size={"sm"}
-                                        src={null}
+                                        src={KEYS.api + data?.Author?.profile}
                                         bg='teal.500'
                                         mr={"20px !important"} />
                                 }

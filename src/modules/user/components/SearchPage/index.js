@@ -24,7 +24,7 @@ function Search() {
         get()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    // const empty = data?.users?.length === 0 && data?.posts?.length === 0
+    // const empty = data?.users?.length === 0 && data?.posts?.leng th === 0
     const empty = users.length === 0 && postslist.length === 0
     return (
         <Fragment>
