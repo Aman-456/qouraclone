@@ -40,7 +40,7 @@ function SingupPage() {
             return null
         }
         else if ((/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
-            if (password.length >= 8 && /[0-9]/.test(password) && /[&._-]/.test(password)) {
+            if (password.length >= 8 && /[0-9]/.test(password)) {
                 request();
             }
             else {

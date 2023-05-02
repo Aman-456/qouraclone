@@ -14,7 +14,7 @@ const App = () => {
                         <Image
                             className="Avatart  profile"
                             src={KEYS.api + e?.profile}
-                            fallback
+                            fallbackSrc='https://via.placeholder.com/150'
                             h="70px"
                             w={"50px"}
                             borderRadius="xl"

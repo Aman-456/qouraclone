@@ -60,7 +60,7 @@ const BalSTatus = ({ text, price, bg }) => {
             {bg ? (
               <Icons icon={"circle"} className={`icons ${bg}`} />
             ) : (
-              <img src="/assets/coin.svg" alt="" />
+              <img src="/assets/coin.svg" alt=""  />
             )}
             {text || "Total Balance"}
           </Typography.Text>

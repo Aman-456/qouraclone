@@ -124,7 +124,7 @@ function Index({ data, admin }) {
                                     color={"darkgray"}
                                     fontWeight={"600"}
                                     fontSize={"sm"}>
-                                    {moment(new Date()).fromNow()}
+                                    {moment(new Date(data?.createdAt)).fromNow()}
                                 </Text>
                                 <Box
                                     display={"flex"}

@@ -91,6 +91,7 @@ function Search() {
                                             <Image
                                                 className="Avatart  profile"
                                                 src={KEYS.api + e?.profile}
+                                                fallbackSrc='https://via.placeholder.com/150'
                                                 h="70px"
                                                 w={"50px"}
                                                 borderRadius="xl"

@@ -495,6 +495,7 @@ function useColumns(status) {
     }, [status, tabledata])
     const dispatch = useDispatch()
     const fire = useSwal()
+
     const setcomplete = async (id) => {
         const d = await POSTREQUEST(endpoints.Admin_completenotice, { id })
         console.log(d);
@@ -508,6 +509,7 @@ function useColumns(status) {
             fire("error", "An Error Occurred")
         }
     }
+
     const Admin_completereported = async (id) => {
         const d = await POSTREQUEST(endpoints.Admin_completereported, { id })
         if (d?.type === "success") {

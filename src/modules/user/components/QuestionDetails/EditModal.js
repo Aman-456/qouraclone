@@ -67,13 +67,16 @@ const EditQuestion = ({
     const Editpost = async () => {
         try {
             if (String(Title)?.trim().length < 30) {
+                setOpen(false)
                 return fire("", "Add Title properly, minimum 30 characters required")
             }
 
             if (String(Body)?.trim().length < 100) {
+                setOpen(false)
                 return fire("", "Add Description properly, minimum 100 characters required")
             }
             if (Tags?.length < 1 || !Tags) {
+                setOpen(false)
                 return fire("", "Add Tags properly, 1 tag required")
             }
             setloading(true)
@@ -232,6 +235,7 @@ const EditCommentReply = ({
             setOpen(false)
         }
         catch (e) {
+            setOpen(false)
             setloading(false)
             console.log(e);
         }
