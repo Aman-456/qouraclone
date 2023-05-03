@@ -85,7 +85,7 @@ function SingupPage() {
         catch (e) {
             dispatch(hideLoader())
             console.log(e);
-            fire("error", data?.result || "Invalid file!");
+            fire("error", data?.result || "Server Error!");
         }
     }
     useEffect(() => {
